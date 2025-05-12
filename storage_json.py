@@ -23,7 +23,7 @@ class StorageJson(IStorage):
 
     def list_movies(self):
         """This function returns all stored movies."""
-        return self._load_movies()  # private helper method _load_movies() includes the try/except
+        return self._load_movies()
 
     def add_movie(self, title, year, rating, poster):
         """This function prompts user to input a movie name and rating, then adds it to the dictionary."""

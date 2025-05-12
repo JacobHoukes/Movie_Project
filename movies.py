@@ -1,215 +1,184 @@
 from colorama import Fore, init
 import random
-import movie_storage
 
 init(autoreset=True)
 
 
-# Functions executing menu item actions
+class MovieApp:
+    def __init__(self, storage):
+        """This method initializes MovieApp with a storage backend."""
+        self._storage = storage
 
-def list_movies():
-    """This function displays all movie titles, ratings, and years in green."""
-    movies = movie_storage.get_movies()
-    print(Fore.GREEN + f"{len(movies)} movies in total")
-    for name, details in movies.items():
-        print(Fore.BLUE + f"{name} ({details['year']}): {details['rating']}")
-
-
-def add_movie():
-    """This function prompts user to input a movie name, rating, and year, then adds it to the JSON file."""
-    movies = movie_storage.get_movies()
-
-    while True:
-        movie_name = input(Fore.YELLOW + "Please enter the name of the movie you'd like to add: ").strip()
-        if not movie_name:
-            print(Fore.RED + "Movie name cannot be empty.")
-        elif movie_name in movies:
-            print(Fore.YELLOW + f"{movie_name} already exists in the database.")
-            return
-        else:
-            break
-
-    while True:
-        try:
-            movie_rating = float(input(Fore.YELLOW + "Please enter a rating (1-10): "))
-            if 1 <= movie_rating <= 10:
-                break
-            else:
-                print(Fore.RED + "Rating must be between 1 and 10.")
-        except ValueError:
-            print(Fore.RED + "Invalid input. Please enter a number.")
-
-    while True:
-        try:
-            movie_year = int(input(Fore.YELLOW + "Please enter the year of release: "))
-            break
-        except ValueError:
-            print(Fore.RED + "Invalid year. Please enter a valid year (e.g. 1994).")
-
-    movie_storage.add_movie(movie_name, movie_year, movie_rating)
-    print(Fore.GREEN + f"{movie_name} added successfully.")
-
-
-def delete_movie():
-    """This function removes a movie from the JSON file if it exists."""
-    movie_name = input(Fore.YELLOW + "Please enter the name of the movie you'd like to remove: ").strip()
-    if not movie_name:
-        print(Fore.RED + "Movie name cannot be empty.")
-        return
-
-    movies = movie_storage.get_movies()
-    if movie_name in movies:
-        movie_storage.delete_movie(movie_name)
-        print(Fore.GREEN + f"{movie_name} deleted successfully.")
-    else:
-        print(Fore.YELLOW + "The movie is not in the database.")
-
-
-def update_movie():
-    """This function updates the rating of an existing movie."""
-    movie_name = input(Fore.YELLOW + "Please enter the name of the movie you'd like to update: ").strip()
-    movies = movie_storage.get_movies()
-
-    if movie_name not in movies:
-        print(Fore.YELLOW + "The movie is not in the database.")
-        return
-
-    while True:
-        try:
-            new_rating = float(input(Fore.YELLOW + "Please enter a new rating (1-10): "))
-            if 1 <= new_rating <= 10:
-                break
-            else:
-                print(Fore.RED + "Rating must be between 1 and 10.")
-        except ValueError:
-            print(Fore.RED + "Invalid input. Please enter a number.")
-
-    movie_storage.update_movie(movie_name, new_rating)
-    print(Fore.GREEN + f"{movie_name} updated successfully.")
-
-
-def get_stats():
-    """This function displays average, median, best, and worst movie ratings."""
-    movies = movie_storage.get_movies()
-    ratings = [details["rating"] for details in movies.values()]
-    if not ratings:
-        print(Fore.YELLOW + "No movies in database.")
-        return
-    avg = round(sum(ratings) / len(ratings), 1)
-    sorted_ratings = sorted(ratings)
-    n = len(ratings)
-    median = sorted_ratings[n // 2] if n % 2 else round((sorted_ratings[n // 2 - 1] + sorted_ratings[n // 2]) / 2, 1)
-    max_rating = max(ratings)
-    min_rating = min(ratings)
-
-    best_movies = [name for name, details in movies.items() if details["rating"] == max_rating]
-    worst_movies = [name for name, details in movies.items() if details["rating"] == min_rating]
-
-    print(Fore.GREEN + f"Average rating: {avg}")
-    print(Fore.GREEN + f"Median rating: {median}")
-    print(Fore.GREEN + "Best rated movie(s):")
-    for movie in best_movies:
-        print(Fore.BLUE + f"{movie}: {movies[movie]['rating']}")
-    print(Fore.GREEN + "Worst rated movie(s):")
-    for movie in worst_movies:
-        print(Fore.BLUE + f"{movie}: {movies[movie]['rating']}")
-
-
-def get_random_movie():
-    """This function prints a randomly selected movie and its rating."""
-    movies = movie_storage.get_movies()
-    if not movies:
-        print(Fore.YELLOW + "No movies in the database.")
-        return
-    name, details = random.choice(list(movies.items()))
-    print(Fore.BLUE + f"{name} ({details['year']}): {details['rating']}")
-
-
-def search_movie():
-    """This function searches for a movie by name and displays its rating and year if found."""
-    query = input(Fore.YELLOW + "What movie are you looking for?: ")
-    movies = movie_storage.get_movies()
-    found = False
-    for name, details in movies.items():
-        if query.lower() in name.lower():
+    def _command_list_movies(self):
+        """This method lists all movies in the database."""
+        movies = self._storage.get_movies()
+        print(Fore.GREEN + f"{len(movies)} movies in total")
+        for name, details in movies.items():
             print(Fore.BLUE + f"{name} ({details['year']}): {details['rating']}")
-            found = True
-    if not found:
-        print(Fore.YELLOW + "The movie is not in the database.")
 
+    def _command_add_movie(self):
+        """This method adds a new movie to the database."""
+        movies = self._storage.get_movies()
 
-def get_sorted_list_by_rtg():
-    """This function displays movies sorted by rating in descending order."""
-    movies = movie_storage.get_movies()
-    sorted_by_rating = sorted(movies.items(), key=lambda item: item[1]["rating"], reverse=True)
-    print(Fore.GREEN + "Movies sorted by rating:")
-    for name, details in sorted_by_rating:
+        while True:
+            name = input(Fore.YELLOW + "Enter movie name: ").strip()
+            if not name:
+                print(Fore.RED + "Movie name cannot be empty.")
+            elif name in movies:
+                print(Fore.YELLOW + f"{name} already exists.")
+                return
+            else:
+                break
+
+        while True:
+            try:
+                rating = float(input(Fore.YELLOW + "Enter rating (1-10): "))
+                if 1 <= rating <= 10:
+                    break
+                else:
+                    print(Fore.RED + "Rating must be between 1 and 10.")
+            except ValueError:
+                print(Fore.RED + "Invalid input. Enter a number.")
+
+        while True:
+            try:
+                year = int(input(Fore.YELLOW + "Enter release year: "))
+                break
+            except ValueError:
+                print(Fore.RED + "Invalid input. Enter a valid year.")
+
+        self._storage.add_movie(name, year, rating)
+        print(Fore.GREEN + f"{name} added successfully.")
+
+    def _command_delete_movie(self):
+        """This method deletes a movie from the database."""
+        name = input(Fore.YELLOW + "Enter movie name to delete: ").strip()
+        movies = self._storage.get_movies()
+
+        if name in movies:
+            self._storage.delete_movie(name)
+            print(Fore.GREEN + f"{name} deleted.")
+        else:
+            print(Fore.YELLOW + "Movie not found.")
+
+    def _command_update_movie(self):
+        """This method updates an existing movie's rating."""
+        name = input(Fore.YELLOW + "Enter movie name to update: ").strip()
+        movies = self._storage.get_movies()
+
+        if name not in movies:
+            print(Fore.YELLOW + "Movie not found.")
+            return
+
+        while True:
+            try:
+                new_rating = float(input(Fore.YELLOW + "Enter new rating (1-10): "))
+                if 1 <= new_rating <= 10:
+                    break
+                else:
+                    print(Fore.RED + "Rating must be between 1 and 10.")
+            except ValueError:
+                print(Fore.RED + "Invalid input. Enter a number.")
+
+        self._storage.update_movie(name, new_rating)
+        print(Fore.GREEN + f"{name} updated successfully.")
+
+    def _command_movie_stats(self):
+        """This method displays movie rating statistics."""
+        movies = self._storage.get_movies()
+        ratings = [d["rating"] for d in movies.values()]
+        if not ratings:
+            print(Fore.YELLOW + "No movies in database.")
+            return
+
+        avg = round(sum(ratings) / len(ratings), 1)
+        sorted_ratings = sorted(ratings)
+        n = len(ratings)
+        median = sorted_ratings[n // 2] if n % 2 else round((sorted_ratings[n // 2 - 1] + sorted_ratings[n // 2]) / 2,
+                                                            1)
+        max_rating = max(ratings)
+        min_rating = min(ratings)
+
+        best = [name for name, d in movies.items() if d["rating"] == max_rating]
+        worst = [name for name, d in movies.items() if d["rating"] == min_rating]
+
+        print(Fore.GREEN + f"Average rating: {avg}")
+        print(Fore.GREEN + f"Median rating: {median}")
+        print(Fore.GREEN + "Best rated movie(s):")
+        for m in best:
+            print(Fore.BLUE + f"{m}: {movies[m]['rating']}")
+        print(Fore.GREEN + "Worst rated movie(s):")
+        for m in worst:
+            print(Fore.BLUE + f"{m}: {movies[m]['rating']}")
+
+    def _command_random_movie(self):
+        """This method displays a randomly selected movie."""
+        movies = self._storage.get_movies()
+        if not movies:
+            print(Fore.YELLOW + "No movies available.")
+            return
+        name, details = random.choice(list(movies.items()))
         print(Fore.BLUE + f"{name} ({details['year']}): {details['rating']}")
 
+    def _command_search_movie(self):
+        """This method searches for movies by name."""
+        query = input(Fore.YELLOW + "Enter movie name to search: ")
+        movies = self._storage.get_movies()
+        found = False
+        for name, d in movies.items():
+            if query.lower() in name.lower():
+                print(Fore.BLUE + f"{name} ({d['year']}): {d['rating']}")
+                found = True
+        if not found:
+            print(Fore.YELLOW + "No matches found.")
 
-# This is the main function
+    def _command_sorted_by_rating(self):
+        """This method displays movies sorted by rating descending."""
+        movies = self._storage.get_movies()
+        sorted_movies = sorted(movies.items(), key=lambda x: x[1]['rating'], reverse=True)
+        print(Fore.GREEN + "Movies sorted by rating:")
+        for name, d in sorted_movies:
+            print(Fore.BLUE + f"{name} ({d['year']}): {d['rating']}")
 
-def main():
-    """This is the main function that runs the movie database app."""
-    show_app_name()
-    while True:
-        show_menu()
-        if not user_input():
-            break
-        enter_to_continue()
+    def _generate_website(self):
+        """This method is a placeholder for website generation logic."""
+        print(Fore.YELLOW + "Website generation not yet implemented.")
 
+    def run(self):
+        """This method is the main program loop."""
+        print(Fore.BLUE + "\n********** My Movies Database **********\n")
+        options = {
+            "1": self._command_list_movies,
+            "2": self._command_add_movie,
+            "3": self._command_delete_movie,
+            "4": self._command_update_movie,
+            "5": self._command_movie_stats,
+            "6": self._command_random_movie,
+            "7": self._command_search_movie,
+            "8": self._command_sorted_by_rating,
+            "9": self._generate_website,
+            "0": lambda: print(Fore.GREEN + "Bye!")
+        }
 
-def show_app_name():
-    """This function displays the movie database's name."""
-    print(Fore.BLUE + "\n********** My Movies Database **********\n")
+        while True:
+            print(Fore.GREEN + "\nMenu:")
+            print("0. Exit")
+            print("1. List movies")
+            print("2. Add movie")
+            print("3. Delete movie")
+            print("4. Update movie")
+            print("5. Show stats")
+            print("6. Random movie")
+            print("7. Search movie")
+            print("8. Sort by rating")
+            print("9. Generate website")
 
-
-def show_menu():
-    """This function displays the menu items."""
-    print(Fore.GREEN + "Menu:")
-    print(Fore.GREEN + "0. Exit")
-    print(Fore.GREEN + "1. List movies")
-    print(Fore.GREEN + "2. Add movie")
-    print(Fore.GREEN + "3. Delete movie")
-    print(Fore.GREEN + "4. Update movie")
-    print(Fore.GREEN + "5. Stats")
-    print(Fore.GREEN + "6. Random movie")
-    print(Fore.GREEN + "7. Search movie")
-    print(Fore.GREEN + "8. Movies sorted by rating\n")
-
-
-def enter_to_continue():
-    """This function asks the user to hit enter to proceed with the program"""
-    input(Fore.YELLOW + "\nPress enter to continue \n")
-
-
-def user_input():
-    """This function asks for user input (number(0-8)) and calls functions depending on that input."""
-    choice = input(Fore.YELLOW + "Enter choice (0-8): ")
-    print("")
-    if choice == "0":
-        print(Fore.GREEN + "Bye!")
-        return False
-    elif choice == "1":
-        list_movies()
-    elif choice == "2":
-        add_movie()
-    elif choice == "3":
-        delete_movie()
-    elif choice == "4":
-        update_movie()
-    elif choice == "5":
-        get_stats()
-    elif choice == "6":
-        get_random_movie()
-    elif choice == "7":
-        search_movie()
-    elif choice == "8":
-        get_sorted_list_by_rtg()
-    else:
-        print(Fore.YELLOW + "Please provide your choice in the form of a number (0-8).")
-    return True
-
-
-if __name__ == "__main__":
-    main()
+            choice = input(Fore.YELLOW + "\nEnter your choice (0-9): ").strip()
+            action = options.get(choice)
+            if action:
+                action()
+                if choice == "0":
+                    break
+            else:
+                print(Fore.RED + "Invalid choice. Please enter a number between 0 and 9.")
+            input(Fore.YELLOW + "\nPress Enter to continue...")

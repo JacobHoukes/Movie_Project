@@ -4,16 +4,16 @@ import random
 init(autoreset=True)
 
 movies = {
-    "The Shawshank Redemption": 9.5,
-    "Pulp Fiction": 8.8,
-    "The Room": 3.6,
-    "The Godfather": 9.2,
-    "The Godfather: Part II": 9.0,
-    "The Dark Knight": 9.0,
-    "12 Angry Men": 8.9,
-    "Everything Everywhere All At Once": 8.9,
-    "Forrest Gump": 8.8,
-    "Star Wars: Episode V": 8.7
+    "The Shawshank Redemption": {"rating": 9.5, "year": 1994},
+    "Pulp Fiction": {"rating": 8.8, "year": 1994},
+    "The Room": {"rating": 3.6, "year": 2003},
+    "The Godfather": {"rating": 9.2, "year": 1972},
+    "The Godfather: Part II": {"rating": 9.0, "year": 1974},
+    "The Dark Knight": {"rating": 9.0, "year": 2008},
+    "12 Angry Men": {"rating": 8.9, "year": 1957},
+    "Everything Everywhere All At Once": {"rating": 8.9, "year": 2022},
+    "Forrest Gump": {"rating": 8.8, "year": 1994},
+    "Star Wars: Episode V": {"rating": 8.7, "year": 1980}
 }
 
 
@@ -23,15 +23,17 @@ movies = {
 def list_movies():
     """This function displays all movie titles and ratings in green."""
     print(Fore.GREEN + f"{len(movies)} movies in total")
-    for name, rating in movies.items():
-        print(Fore.BLUE + f"{name}: {rating}")
+    for name, info in movies.items():
+        print(Fore.BLUE + f"{name} ({info['year']}): {info['rating']}")
 
 
 def add_movie():
     """This function prompts user to input a movie name and rating, then adds it to the dictionary."""
     movie_name = input(Fore.YELLOW + "Please enter the name of the movie you'd like to add: ")
     movie_rating = input(Fore.YELLOW + "Please enter a rating (a number between 1-10): ")
-    movies[movie_name] = float(movie_rating)
+    movie_year = input(Fore.YELLOW + "Please enter the year of release: ")
+    movies[movie_name] = {"rating": float(movie_rating), "year": int(movie_year)}
+
 
 
 def delete_movie():
@@ -48,7 +50,7 @@ def update_movie():
     is_found, movie_key = find_db_movie(provided_name)
     if is_found:
         new_rating = input(Fore.YELLOW + "Please enter a new rating: ")
-        movies[movie_key] = float(new_rating)
+        movies[movie_key]["rating"] = float(new_rating)
 
 
 def get_stats():
@@ -73,9 +75,9 @@ def search_movie():
     """This function searches for a movie by name and displays its rating if found."""
     query = input(Fore.YELLOW + "What movie are you looking for?: ")
     found = False
-    for name, rating in movies.items():
+    for name, info in movies.items():
         if query.lower() in name.lower():
-            print(Fore.BLUE + f"{name}: {rating}")
+            print(Fore.BLUE + f"{name} ({info['year']}): {info['rating']}")
             found = True
     if not found:
         print(Fore.YELLOW + "The movie is not in the database.")
@@ -83,10 +85,10 @@ def search_movie():
 
 def get_sorted_list_by_rtg():
     """This function displays movies sorted by rating in descending order."""
-    sorted_by_val = dict(sorted(movies.items(), reverse=True, key=lambda movie: movie[1]))
+    sorted_movies = sorted(movies.items(), key=lambda item: item[1]["rating"], reverse=True)
     print(Fore.GREEN + "Movies sorted by rating:")
-    for name, rating in sorted_by_val.items():
-        print(Fore.BLUE + f"{name}: {rating}")
+    for name, info in sorted_movies:
+        print(Fore.BLUE + f"{name} ({info['year']}): {info['rating']}")
 
 
 # Functions for general actions, such as finding a movie in the dictionary, etc.
@@ -107,48 +109,36 @@ def find_db_movie(query):
 def get_average_rating():
     """This function sums up all ratings included in the movies dictionary
         and divides that sum by the amount of ratings in the dictionary, rounded to one decimal place."""
-    sum_ratings = 0
-    for name, rating in movies.items():
-        sum_ratings += float(rating)
-    avg_rtg = round(sum_ratings / len(movies), 1)
-    return Fore.GREEN + f"The average rating of all movie ratings in the database is {avg_rtg}"
+    ratings = [info["rating"] for info in movies.values()]
+    avg = round(sum(ratings) / len(ratings), 1)
+    return Fore.GREEN + f"The average rating of all movie ratings in the database is {avg}"
 
 
 def get_median_rating():
     """This function returns the median movie rating."""
-    sorted_rtg_list = sorted(movies.values())
-    n = len(sorted_rtg_list)
+    ratings = sorted([info["rating"] for info in movies.values()])
+    n = len(ratings)
     if n % 2 != 0:
-        # if n odd, median is the middle number of the sorted list
-        return Fore.GREEN + f"The median rating of all ratings in the database is {sorted_rtg_list[n // 2]}.\n"
+        return Fore.GREEN + f"The median rating is {ratings[n // 2]}.\n"
     else:
-        # if n even, median is the average of the two middle numbers
-        even_median = round((sorted_rtg_list[n // 2 - 1] + sorted_rtg_list[n // 2]) / 2, 1)
-        return Fore.GREEN + f"The median rating of all ratings in the database is {even_median}.\n"
+        median = round((ratings[n // 2 - 1] + ratings[n // 2]) / 2, 1)
+        return Fore.GREEN + f"The median rating is {median}.\n"
 
 
 def get_best_movie():
     """This function returns the best-rated movie(s)."""
-    best_movies_dict = {}
-    for name, rating in movies.items():
-        if rating >= max(movies.values()):
-            best_movies_dict[name] = rating
-    best_movies = ""
-    for movie, rtg in best_movies_dict.items():
-        best_movies += Fore.BLUE + f"{movie}: {rtg}\n"
-    return Fore.GREEN + f"The movie(s) with the highest rating:\n{best_movies}"
+    max_rating = max(info["rating"] for info in movies.values())
+    best = [f"{name} ({info['year']}): {info['rating']}" for name, info in movies.items() if
+            info["rating"] == max_rating]
+    return Fore.GREEN + "Best rated movie(s):\n" + "\n".join(Fore.BLUE + m for m in best)
 
 
 def get_worst_movie():
     """This function returns the worst-rated movie(s)."""
-    worst_movies_dict = {}
-    for name, rating in movies.items():
-        if rating <= min(movies.values()):
-            worst_movies_dict[name] = rating
-    worst_movies = ""
-    for movie, rtg in worst_movies_dict.items():
-        worst_movies += Fore.BLUE + f"{movie}: {rtg}\n"
-    return Fore.GREEN + f"The movie(s) with the lowest rating:\n{worst_movies}"
+    min_rating = min(info["rating"] for info in movies.values())
+    worst = [f"{name} ({info['year']}): {info['rating']}" for name, info in movies.items() if
+             info["rating"] == min_rating]
+    return Fore.GREEN + "Worst rated movie(s):\n" + "\n".join(Fore.BLUE + m for m in worst)
 
 
 # This is the main function
@@ -171,6 +161,7 @@ def show_app_name():
 def show_menu():
     """This function displays the menu items."""
     print(Fore.GREEN + "Menu:")
+    print(Fore.GREEN + "0. Exit")
     print(Fore.GREEN + "1. List movies")
     print(Fore.GREEN + "2. Add movie")
     print(Fore.GREEN + "3. Delete movie")
@@ -190,6 +181,9 @@ def user_input():
     """This function asks for user input (number(1-8)) and calls functions depending on that input."""
     choice = input(Fore.YELLOW + "Enter choice (1-8): ")
     print("")
+    if choice == "0":
+        print(Fore.BLUE + "Bye!")
+        exit()
     if choice == "1":
         list_movies()
     if choice == "2":

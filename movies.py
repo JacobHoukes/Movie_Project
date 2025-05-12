@@ -4,6 +4,7 @@ import movie_storage
 
 init(autoreset=True)
 
+
 # Functions executing menu item actions
 
 def list_movies():
@@ -17,19 +18,45 @@ def list_movies():
 def add_movie():
     """This function prompts user to input a movie name, rating, and year, then adds it to the JSON file."""
     movies = movie_storage.get_movies()
-    movie_name = input(Fore.YELLOW + "Please enter the name of the movie you'd like to add: ")
-    if movie_name in movies:
-        print(Fore.YELLOW + f"{movie_name} already exists in the database.")
-        return
-    movie_rating = float(input(Fore.YELLOW + "Please enter a rating (a number between 1-10): "))
-    movie_year = int(input(Fore.YELLOW + "Please enter the year of release: "))
+
+    while True:
+        movie_name = input(Fore.YELLOW + "Please enter the name of the movie you'd like to add: ").strip()
+        if not movie_name:
+            print(Fore.RED + "Movie name cannot be empty.")
+        elif movie_name in movies:
+            print(Fore.YELLOW + f"{movie_name} already exists in the database.")
+            return
+        else:
+            break
+
+    while True:
+        try:
+            movie_rating = float(input(Fore.YELLOW + "Please enter a rating (1-10): "))
+            if 1 <= movie_rating <= 10:
+                break
+            else:
+                print(Fore.RED + "Rating must be between 1 and 10.")
+        except ValueError:
+            print(Fore.RED + "Invalid input. Please enter a number.")
+
+    while True:
+        try:
+            movie_year = int(input(Fore.YELLOW + "Please enter the year of release: "))
+            break
+        except ValueError:
+            print(Fore.RED + "Invalid year. Please enter a valid year (e.g. 1994).")
+
     movie_storage.add_movie(movie_name, movie_year, movie_rating)
     print(Fore.GREEN + f"{movie_name} added successfully.")
 
 
 def delete_movie():
     """This function removes a movie from the JSON file if it exists."""
-    movie_name = input(Fore.YELLOW + "Please enter the name of the movie you'd like to remove: ")
+    movie_name = input(Fore.YELLOW + "Please enter the name of the movie you'd like to remove: ").strip()
+    if not movie_name:
+        print(Fore.RED + "Movie name cannot be empty.")
+        return
+
     movies = movie_storage.get_movies()
     if movie_name in movies:
         movie_storage.delete_movie(movie_name)
@@ -40,14 +67,25 @@ def delete_movie():
 
 def update_movie():
     """This function updates the rating of an existing movie."""
-    movie_name = input(Fore.YELLOW + "Please enter the name of the movie you'd like to update: ")
+    movie_name = input(Fore.YELLOW + "Please enter the name of the movie you'd like to update: ").strip()
     movies = movie_storage.get_movies()
-    if movie_name in movies:
-        new_rating = float(input(Fore.YELLOW + "Please enter a new rating: "))
-        movie_storage.update_movie(movie_name, new_rating)
-        print(Fore.GREEN + f"{movie_name} updated successfully.")
-    else:
+
+    if movie_name not in movies:
         print(Fore.YELLOW + "The movie is not in the database.")
+        return
+
+    while True:
+        try:
+            new_rating = float(input(Fore.YELLOW + "Please enter a new rating (1-10): "))
+            if 1 <= new_rating <= 10:
+                break
+            else:
+                print(Fore.RED + "Rating must be between 1 and 10.")
+        except ValueError:
+            print(Fore.RED + "Invalid input. Please enter a number.")
+
+    movie_storage.update_movie(movie_name, new_rating)
+    print(Fore.GREEN + f"{movie_name} updated successfully.")
 
 
 def get_stats():

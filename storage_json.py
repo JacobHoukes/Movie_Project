@@ -13,15 +13,18 @@ class StorageJson(IStorage):
 
     def _load_movies(self):
         """This function loads and returns the movie data from the JSON file."""
-        with open(self.file_path, "r") as f:
-            return json.load(f)
+        try:
+            with open(self.file_path, "r") as f:
+                return json.load(f)
+        except FileNotFoundError:
+            return {}
 
     def _save_movies(self, movies):
         """This function saves the provided movie data to the JSON file."""
         with open(self.file_path, "w") as f:
             json.dump(movies, f, indent=4)
 
-    def list_movies(self):
+    def get_movies(self):
         """This function returns all stored movies."""
         return self._load_movies()
 

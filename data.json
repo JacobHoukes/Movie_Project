@@ -23,10 +23,6 @@
         "rating": 9.0,
         "year": 2008
     },
-    "12 Angry Men": {
-        "rating": 9.9,
-        "year": 1957
-    },
     "Everything Everywhere All At Once": {
         "rating": 8.9,
         "year": 2022
@@ -42,5 +38,9 @@
     "Enchanted": {
         "year": 2007,
         "rating": 7.0
+    },
+    "12 Angry Men": {
+        "year": 1997,
+        "rating": 10.0
     }
 }

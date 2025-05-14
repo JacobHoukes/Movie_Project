@@ -8,7 +8,7 @@ class StorageCsv(IStorage):
         self.file_path = file_path
         if not os.path.exists(self.file_path):
             with open(self.file_path, "w") as file:
-                pass
+                file.write("title,year,rating\n")
 
     def _load_movies(self):
         """This method loads all movies from the file into a dictionary."""
@@ -18,18 +18,19 @@ class StorageCsv(IStorage):
             for line in lines:
                 parts = line.strip().split(",")
                 if len(parts) == 3:
-                    title, year, rating = parts
+                    title, rating, year = parts
                     movies[title] = {
-                        "year": year,
-                        "rating": float(rating)
+                        "rating": rating,
+                        "year": year
                     }
         return movies
 
     def _save_movies(self, movies):
         """This method saves the entire movie dictionary to the file."""
         with open(self.file_path, "w") as file:
+            file.write("title,rating,year\n")  # optional header
             for title, data in movies.items():
-                file.write(f"{title},{data['year']},{data['rating']}\n")
+                file.write(f"{title},{data['rating']},{data['year']}\n")
 
     def list_movies(self):
         """This method returns all movies as a dictionary."""
@@ -39,8 +40,8 @@ class StorageCsv(IStorage):
         """This method adds a new movie to the collection."""
         movies = self._load_movies()
         movies[title] = {
-            "year": year,
-            "rating": float(rating)
+            "rating": rating,
+            "year": year
         }
         self._save_movies(movies)
 
@@ -55,5 +56,5 @@ class StorageCsv(IStorage):
         """This method updates the rating of a movie."""
         movies = self._load_movies()
         if title in movies:
-            movies[title]["rating"] = float(rating)
+            movies[title]["rating"] = rating
             self._save_movies(movies)

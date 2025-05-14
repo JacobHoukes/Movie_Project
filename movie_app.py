@@ -12,9 +12,14 @@ class MovieApp:
     def list_movies(self):
         """This method lists all movies in the database."""
         movies = self._storage.list_movies()
-        print(Fore.GREEN + f"{len(movies)} movies in total")
+
+        if "title" in movies.keys():
+            print(Fore.GREEN + f"{len(movies) - 1} movies in total")
+        else:
+            print(Fore.GREEN + f"{len(movies)} movies in total")
         for name, details in movies.items():
-            print(Fore.BLUE + f"{name} ({details['year']}): {details['rating']}")
+            if not name == "title":
+                print(Fore.BLUE + f"{name} ({details['year']}): {details['rating']}")
 
     def add_movie(self):
         """This method adds a new movie to the database."""
@@ -95,7 +100,8 @@ class MovieApp:
         avg = round(sum(ratings) / len(ratings), 1)
         sorted_ratings = sorted(ratings)
         n = len(ratings)
-        median = sorted_ratings[n // 2] if n % 2 else round((sorted_ratings[n // 2 - 1] + sorted_ratings[n // 2]) / 2, 1)
+        median = sorted_ratings[n // 2] if n % 2 else round((sorted_ratings[n // 2 - 1] + sorted_ratings[n // 2]) / 2,
+                                                            1)
         max_rating = max(ratings)
         min_rating = min(ratings)
 

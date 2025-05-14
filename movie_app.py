@@ -9,16 +9,16 @@ class MovieApp:
         """This method initializes MovieApp with a storage backend."""
         self._storage = storage
 
-    def get_movies(self):
+    def list_movies(self):
         """This method lists all movies in the database."""
-        movies = self._storage.get_movies()
+        movies = self._storage.list_movies()
         print(Fore.GREEN + f"{len(movies)} movies in total")
         for name, details in movies.items():
             print(Fore.BLUE + f"{name} ({details['year']}): {details['rating']}")
 
     def add_movie(self):
         """This method adds a new movie to the database."""
-        movies = self._storage.get_movies()
+        movies = self._storage.list_movies()
 
         while True:
             name = input(Fore.YELLOW + "Enter movie name: ").strip()
@@ -54,7 +54,7 @@ class MovieApp:
     def delete_movie(self):
         """This method deletes a movie from the database."""
         name = input(Fore.YELLOW + "Enter movie name to delete: ").strip()
-        movies = self._storage.get_movies()
+        movies = self._storage.list_movies()
 
         if name in movies:
             self._storage.delete_movie(name)
@@ -65,7 +65,7 @@ class MovieApp:
     def update_movie(self):
         """This method updates an existing movie's rating."""
         name = input(Fore.YELLOW + "Enter movie name to update: ").strip()
-        movies = self._storage.get_movies()
+        movies = self._storage.list_movies()
 
         if name not in movies:
             print(Fore.YELLOW + "Movie not found.")
@@ -86,7 +86,7 @@ class MovieApp:
 
     def movie_stats(self):
         """This method displays movie rating statistics."""
-        movies = self._storage.get_movies()
+        movies = self._storage.list_movies()
         ratings = [details["rating"] for details in movies.values()]
         if not ratings:
             print(Fore.YELLOW + "No movies in database.")
@@ -113,7 +113,7 @@ class MovieApp:
 
     def random_movie(self):
         """This method displays a randomly selected movie."""
-        movies = self._storage.get_movies()
+        movies = self._storage.list_movies()
         if not movies:
             print(Fore.YELLOW + "No movies available.")
             return
@@ -123,7 +123,7 @@ class MovieApp:
     def search_movie(self):
         """This method searches for movies by name."""
         query = input(Fore.YELLOW + "Enter movie name to search: ")
-        movies = self._storage.get_movies()
+        movies = self._storage.list_movies()
         found = False
         for name, detail in movies.items():
             if query.lower() in name.lower():
@@ -134,7 +134,7 @@ class MovieApp:
 
     def sorted_by_rating(self):
         """This method displays movies sorted by rating descending."""
-        movies = self._storage.get_movies()
+        movies = self._storage.list_movies()
         sorted_movies = sorted(movies.items(), key=lambda x: x[1]['rating'], reverse=True)
         print(Fore.GREEN + "Movies sorted by rating:")
         for name, detail in sorted_movies:
@@ -167,7 +167,7 @@ class MovieApp:
                 print(Fore.GREEN + "Bye!")
                 break
             elif choice == "1":
-                self.get_movies()
+                self.list_movies()
             elif choice == "2":
                 self.add_movie()
             elif choice == "3":

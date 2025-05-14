@@ -24,7 +24,7 @@ class StorageJson(IStorage):
         with open(self.file_path, "w") as f:
             json.dump(movies, f, indent=4)
 
-    def get_movies(self):
+    def list_movies(self):
         """This function returns all stored movies."""
         return self._load_movies()
 

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class IStorage(ABC):
     @abstractmethod
-    def get_movies(self):
+    def list_movies(self):
         """This function retrieves all stored movies as a dictionary."""
         pass
 

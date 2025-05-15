@@ -1,10 +1,14 @@
 from colorama import Fore, init
+from dotenv import load_dotenv
 import requests
 import random
+import os
 
 init(autoreset=True)  # after each print with color, the text color automatically resets to default terminal color
 
-OMDB_API_KEY = "5a479c30"
+# Load .env variables
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
 
 
 class MovieApp:
@@ -39,7 +43,7 @@ class MovieApp:
                 break
 
         try:
-            url = f"http://www.omdbapi.com/?apikey={OMDB_API_KEY}&t={name}"
+            url = f"http://www.omdbapi.com/?apikey={API_KEY}&t={name}"
             response = requests.get(url)
             data = response.json()
 
@@ -169,7 +173,7 @@ class MovieApp:
 
         for name, details in movies.items():
             try:
-                url = f"http://www.omdbapi.com/?apikey={OMDB_API_KEY}&t={name}"
+                url = f"http://www.omdbapi.com/?apikey={API_KEY}&t={name}"
                 response = requests.get(url)
                 data = response.json()
 
@@ -181,19 +185,19 @@ class MovieApp:
                 year = data.get("Year")
                 poster = data.get("Poster")
 
+                html_block = f"""
+                           <li>
+                               <div class="movie">
+                                   <img class="movie-poster" src="{poster}" alt="{title} poster"/>
+                                   <div class="movie-title">{title}</div>
+                                   <div class="movie-year">{year}</div>
+                               </div>
+                           </li>
+                           """
+                movie_html_blocks.append(html_block)
+
             except requests.exceptions.RequestException as e:
                 print(Fore.RED + f"Error accessing OMDb API: {e}")
-
-            html_block = f"""
-            <li>
-                <div class="movie">
-                    <img class="movie-poster" src="{poster}" alt="{title} poster"/>
-                    <div class="movie-title">{title}</div>
-                    <div class="movie-year">{year}</div>
-                </div>
-            </li>
-            """
-            movie_html_blocks.append(html_block)
 
         all_movies_html = ""
         for block in movie_html_blocks:

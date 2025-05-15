@@ -46,5 +46,97 @@
     "Bambi": {
         "year": "1942",
         "rating": 7.3
+    },
+    "Dune": {
+        "year": "1984",
+        "rating": 6.3
+    },
+    "Wicked": {
+        "year": "2024",
+        "rating": 7.5
+    },
+    "Black Swan": {
+        "year": "2010",
+        "rating": 8.0
+    },
+    "Brokeback Mountain": {
+        "year": "2005",
+        "rating": 7.7
+    },
+    "Call Me by Your Name": {
+        "year": "2017",
+        "rating": 7.8
+    },
+    "Titanic": {
+        "year": "1997",
+        "rating": 7.9
+    },
+    "Spirited Away": {
+        "year": "2001",
+        "rating": 8.6
+    },
+    "The Danish Girl": {
+        "year": "2015",
+        "rating": 7.1
+    },
+    "Carol": {
+        "year": "2015",
+        "rating": 7.2
+    },
+    "Les Mis\u00e9rables": {
+        "year": "2012",
+        "rating": 7.5
+    },
+    "The Holiday": {
+        "year": "2006",
+        "rating": 7.0
+    },
+    "Disclosure": {
+        "year": "1994",
+        "rating": 6.2
+    },
+    "Rocketman": {
+        "year": "2019",
+        "rating": 7.3
+    },
+    "But I'm a Cheerleader": {
+        "year": "1999",
+        "rating": 6.8
+    },
+    "The Avengers": {
+        "year": "2012",
+        "rating": 8.0
+    },
+    "The Devil Wears Prada": {
+        "year": "2006",
+        "rating": 6.9
+    },
+    "Coyote Ugly": {
+        "year": "2000",
+        "rating": 5.7
+    },
+    "Burlesque": {
+        "year": "2010",
+        "rating": 6.4
+    },
+    "Ballet Shoes": {
+        "year": "2007",
+        "rating": 6.6
+    },
+    "The Perks of Being a Wallflower": {
+        "year": "2012",
+        "rating": 7.9
+    },
+    "Slumdog Millionaire": {
+        "year": "2008",
+        "rating": 8.0
+    },
+    "Erin Brockovich": {
+        "year": "2000",
+        "rating": 7.4
+    },
+    "Steel Magnolias": {
+        "year": "1989",
+        "rating": 7.3
     }
 }

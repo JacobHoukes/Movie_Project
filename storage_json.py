@@ -8,15 +8,15 @@ class StorageJson(IStorage):
         """This method initializes the storage with a given file path."""
         self.file_path = file_path
         if not os.path.exists(file_path):
-            with open(file_path, "w") as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 json.dump({}, f)
 
     def _load_movies(self):
         """This helper method loads and returns the movie data from the JSON file."""
         try:
-            with open(self.file_path, "r") as f:
+            with open(self.file_path, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except FileNotFoundError:
+        except (FileNotFoundError, json.JSONDecodeError):
             return {}
 
     def _save_movies(self, movies):

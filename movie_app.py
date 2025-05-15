@@ -1,7 +1,10 @@
 from colorama import Fore, init
+import requests
 import random
 
-init(autoreset=True)
+init(autoreset=True)  # after each print with color, the text color automatically resets to default terminal color
+
+OMDB_API_KEY = "5a479c30"
 
 
 class MovieApp:
@@ -22,7 +25,7 @@ class MovieApp:
                 print(Fore.BLUE + f"{name} ({details['year']}): {details['rating']}")
 
     def add_movie(self):
-        """This method adds a new movie to the database."""
+        """This method adds a new movie by fetching details from OMDb API."""
         movies = self._storage.list_movies()
 
         while True:
@@ -35,26 +38,31 @@ class MovieApp:
             else:
                 break
 
-        while True:
-            try:
-                rating = float(input(Fore.YELLOW + "Enter rating (1-10): "))
-                if 1 <= rating <= 10:
-                    break
-                else:
-                    print(Fore.RED + "Rating must be between 1 and 10.")
-            except ValueError:
-                print(Fore.RED + "Invalid input. Enter a number.")
+        try:
+            url = f"http://www.omdbapi.com/?apikey={OMDB_API_KEY}&t={name}"
+            response = requests.get(url)
+            data = response.json()
 
-        while True:
-            try:
-                year = int(input(Fore.YELLOW + "Enter release year: "))
-                break
-            except ValueError:
-                print(Fore.RED + "Invalid input. Enter a valid year.")
+            if data.get("Response") == "False":
+                print(Fore.RED + f"Movie not found in OMDb: {data.get('Error')}")
+                return
 
-        poster = "N/A"
-        self._storage.add_movie(name, year, rating, poster)
-        print(Fore.GREEN + f"{name} added successfully.")
+            title = data.get("Title", name)
+            year = data.get("Year")
+            rating = data.get("imdbRating")
+            poster = data.get("Poster")
+
+            try:
+                rating = float(rating)
+            except ValueError:
+                print(Fore.YELLOW + "Invalid rating from OMDb, setting to 0.")
+                rating = 0.0
+
+            self._storage.add_movie(title, year, rating, poster)
+            print(Fore.GREEN + f"{title} added successfully.")
+
+        except requests.exceptions.RequestException as e:
+            print(Fore.RED + f"Error accessing OMDb API: {e}")
 
     def delete_movie(self):
         """This method deletes a movie from the database."""
@@ -148,7 +156,57 @@ class MovieApp:
 
     def generate_website(self):
         """This method is a placeholder for website generation logic."""
-        print(Fore.YELLOW + "Website generation not yet implemented.")
+        movies = self._storage.list_movies()
+
+        try:
+            with open("_static/index_template.html", "r", encoding="utf-8") as template_file:
+                template = template_file.read()
+        except FileNotFoundError:
+            print(Fore.RED + "Template file 'index_template.html' not found.")
+            return
+
+        movie_html_blocks = []
+
+        for name, details in movies.items():
+            try:
+                url = f"http://www.omdbapi.com/?apikey={OMDB_API_KEY}&t={name}"
+                response = requests.get(url)
+                data = response.json()
+
+                if data.get("Response") == "False":
+                    print(Fore.RED + f"Movie not found in OMDb: {data.get('Error')}")
+                    return
+
+                title = data.get("Title", name)
+                year = data.get("Year")
+                poster = data.get("Poster")
+
+            except requests.exceptions.RequestException as e:
+                print(Fore.RED + f"Error accessing OMDb API: {e}")
+
+            html_block = f"""
+            <li>
+                <div class="movie">
+                    <img class="movie-poster" src="{poster}" alt="{title} poster"/>
+                    <div class="movie-title">{title}</div>
+                    <div class="movie-year">{year}</div>
+                </div>
+            </li>
+            """
+            movie_html_blocks.append(html_block)
+
+        all_movies_html = ""
+        for block in movie_html_blocks:
+            all_movies_html += block + "\n"
+
+        final_html = template.replace("__TEMPLATE_MOVIE_GRID__", all_movies_html)
+
+        try:
+            with open("_static/index.html", "w", encoding="utf-8") as output_file:
+                output_file.write(final_html)
+            print(Fore.GREEN + "Website generated successfully as 'index.html'.")
+        except Exception as e:
+            print(Fore.RED + f"Could not write website file: {e}")
 
     def run(self):
         """This method is the main program loop."""

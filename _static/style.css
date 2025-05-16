@@ -1,52 +1,62 @@
 body {
-  background: #F5F5F0;
-  color: black;
-  font-family: Monaco;
+  background: #19241e;
+  color: #e0e0e0;
+  font-family: Calibre, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 .list-movies-title {
-  padding: 10px 0;
-  background: #009B50;
-  color: white;
+  padding: 20px 0;
+  background: #2b4539;
+  color: #d0e0d8;
   text-align: center;
-  font-size: 16pt;
+  font-size: 22pt;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
 .movie-grid {
   list-style-type: none;
-  padding: 40;
-  margin: 20px auto 0 auto;
+  padding: 40px;
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 20px;
-  max-width: 1480px; /* 10 items x 140px + gaps */
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 60px;
+  max-width: 1440px;
   justify-content: center;
 }
 
 .movie-grid li {
-  text-align: left;
-}
-
-.movie {
-  width: 140px;
-}
-
-.movie-title,
-.movie-year {
-  font-size: 0.8em;
   text-align: center;
 }
 
-.movie-title {
-  margin-top: 10px;
-}
-
-.movie-year {
-  color: #999;
+.movie {
+  width: 100%;
 }
 
 .movie-poster {
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-  width: 128px;
-  height: 193px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 8px;
+}
+
+.movie-poster:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.movie-title {
+  margin-top: 20px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #c0c0c0;
+}
+
+.movie-year {
+  font-size: 0.9rem;
+  color: #8a9a94;
 }

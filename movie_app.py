@@ -43,7 +43,7 @@ class MovieApp:
                 break
 
         try:
-            url = f"http://www.omdbapi.com/?apikey={API_KEY}&t={name}"
+            url = f"http://www.omdbapi.com/?i=tt3896198&apikey={API_KEY}&t={name}"
             response = requests.get(url)
             data = response.json()
 
@@ -173,7 +173,7 @@ class MovieApp:
 
         for name, details in movies.items():
             try:
-                url = f"http://www.omdbapi.com/?apikey={API_KEY}&t={name}"
+                url = f"http://www.omdbapi.com/?i=tt3896198&apikey={API_KEY}&t={name}"
                 response = requests.get(url)
                 data = response.json()
 

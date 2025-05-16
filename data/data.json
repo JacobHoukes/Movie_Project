@@ -7,10 +7,6 @@
         "rating": 8.8,
         "year": 1994
     },
-    "The Room": {
-        "rating": 3.6,
-        "year": 2003
-    },
     "The Godfather": {
         "rating": 9.2,
         "year": 1972
@@ -138,5 +134,9 @@
     "The Golden Compass": {
         "year": "2007",
         "rating": 10.0
+    },
+    "My Best Friend's Wedding": {
+        "year": "1997",
+        "rating": 6.4
     }
 }

@@ -1,20 +1,16 @@
 from colorama import Fore, init
-from dotenv import load_dotenv
 import requests
 import random
-import os
 
-init(autoreset=True)  # after each print with color, the text color automatically resets to default terminal color
-
-# Load .env variables
-load_dotenv()
-API_KEY = os.getenv("API_KEY")
+# After each print with color, the text color automatically resets to default terminal color
+init(autoreset=True)
 
 
 class MovieApp:
-    def __init__(self, storage):
+    def __init__(self, storage, api_key):
         """This method initializes MovieApp with a storage backend."""
         self._storage = storage
+        self._api_key = api_key
 
     def list_movies(self):
         """This method lists all movies in the database."""
@@ -43,7 +39,7 @@ class MovieApp:
                 break
 
         try:
-            url = f"http://www.omdbapi.com/?apikey={API_KEY}&t={name}"
+            url = f"http://www.omdbapi.com/?apikey={self._api_key}&t={name}"
             response = requests.get(url)
             data = response.json()
 
@@ -173,7 +169,7 @@ class MovieApp:
 
         for name, details in movies.items():
             try:
-                url = f"http://www.omdbapi.com/?apikey={API_KEY}&t={name}"
+                url = f"http://www.omdbapi.com/?apikey={self._api_key}&t={name}"
                 response = requests.get(url)
                 data = response.json()
 
@@ -199,9 +195,7 @@ class MovieApp:
             except requests.exceptions.RequestException as e:
                 print(Fore.RED + f"Error accessing OMDb API: {e}")
 
-        all_movies_html = ""
-        for block in movie_html_blocks:
-            all_movies_html += block + "\n"
+        all_movies_html = "\n".join(movie_html_blocks)
 
         final_html = template.replace("__TEMPLATE_MOVIE_GRID__", all_movies_html)
 

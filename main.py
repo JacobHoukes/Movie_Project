@@ -1,13 +1,12 @@
-from storage.storage_json import StorageJson
+from dotenv import load_dotenv
+import os
+
 from movie_app import MovieApp
+from storage.storage_json import StorageJson
 
+load_dotenv()
+api_key = os.getenv("API_KEY")
 
-def main():
-    """This function initializes the movie app with JSON storage and starts the main loop."""
-    storage = StorageJson("data/data.json")
-    app = MovieApp(storage)
-    app.run()
-
-
-if __name__ == "__main__":
-    main()
+storage = StorageJson("data/data.json")
+app = MovieApp(storage=storage, api_key=api_key)
+app.run()

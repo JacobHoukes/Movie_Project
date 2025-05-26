@@ -68,10 +68,11 @@ class MovieApp:
         """This method deletes a movie from the database."""
         name = input(Fore.YELLOW + "Enter movie name to delete: ").strip()
         movies = self._storage.list_movies()
+        matched_name = next((movie for movie in movies if movie.lower() == name.lower()), None)
 
-        if name in movies:
-            self._storage.delete_movie(name)
-            print(Fore.GREEN + f"{name} deleted.")
+        if matched_name:
+            self._storage.delete_movie(matched_name)
+            print(Fore.GREEN + f"{matched_name} deleted.")
         else:
             print(Fore.YELLOW + "Movie not found.")
 
@@ -79,8 +80,9 @@ class MovieApp:
         """This method updates an existing movie's rating."""
         name = input(Fore.YELLOW + "Enter movie name to update: ").strip()
         movies = self._storage.list_movies()
+        matched_name = next((movie for movie in movies if movie.lower() == name.lower()), None)
 
-        if name not in movies:
+        if not matched_name:
             print(Fore.YELLOW + "Movie not found.")
             return
 
@@ -94,8 +96,8 @@ class MovieApp:
             except ValueError:
                 print(Fore.RED + "Invalid input. Enter a number.")
 
-        self._storage.update_movie(name, new_rating)
-        print(Fore.GREEN + f"{name} updated successfully.")
+        self._storage.update_movie(matched_name, new_rating)
+        print(Fore.GREEN + f"{matched_name} updated successfully.")
 
     def movie_stats(self):
         """This method displays movie rating statistics."""
